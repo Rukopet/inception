@@ -53,3 +53,4 @@ declare -x XPC_FLAGS="0x0"
 declare -x XPC_SERVICE_NAME="com.apple.xpc.launchd.oneshot.0x10000002.pycharm"
 declare -x ZSH="/Users/egums/.oh-my-zsh"
 declare -x __CF_USER_TEXT_ENCODING="0xF6BFE:0x0:0x0"
+Top level object in './srcs/docker-compose.yml' needs to be an object not '<class 'NoneType'>'.

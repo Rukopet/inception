@@ -13,6 +13,8 @@ PATH_ENV="$(cd -P "$SCRIPTPATH"/../../ && pwd -P)"/.env
 LOG_LOCATION=$SCRIPTPATH/logs.txt
 exec > >(tee $LOG_LOCATION) 2>&1
 
+# Путь до докер компоуз ямла
+COMPOSE_YML="srcs/docker-compose.yml"
 
 # Подгружаем настройки переменных
 unamestr=$(uname)
@@ -35,13 +37,16 @@ elif [ "$unamestr" = "FreeBSD" ]; then
 fi
 
 compose_start() {
-  docker-compose -f docker-compose.yaml up
+  docker-compose -f $COMPOSE_YML up
 }
 
 code_reload() {
   docker-compose up --detach --build
 }
 
-if [ '$1' = 'reload' ]; then
+
+if [ $1 = 'reload' ]; then
   code_reload
+elif [ $1 = 'start' ]; then
+  compose_start
 fi
