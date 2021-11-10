@@ -20,19 +20,19 @@ COMPOSE_YML="srcs/docker-compose.yml"
 unamestr=$(uname)
 if [ "$unamestr" = "Linux" ]; then
 
-  export $(grep -v '^#' $SCRIPTPATH/.default/.env | xargs -d '\n')
-  export $(grep -v '^#' $SCRIPTPATH/.env | xargs -d '\n')
+  export $(grep -v '^#' $PATH_TO_DEFAULT | xargs -d '\n')
+  export $(grep -v '^#' $PATH_ENV| xargs -d '\n')
 
 
 elif [ "$unamestr" = "Darwin" ]; then
 
-  export $(grep -v '^#' $SCRIPTPATH/.default/.env | xargs -I '\n')
-  export $(grep -v '^#' $SCRIPTPATH/.env | xargs -I '\n')
+  export $(grep -v '^#' $PATH_TO_DEFAULT | xargs -I '\n')
+  export $(grep -v '^#' $PATH_ENV | xargs -I '\n')
 
 elif [ "$unamestr" = "FreeBSD" ]; then
 
-  export $(grep -v '^#' $SCRIPTPATH/.default/.env | xargs -0)
-  export $(grep -v '^#' $SCRIPTPATH/.env | xargs -0)
+  export $(grep -v '^#' $PATH_TO_DEFAULT | xargs -0)
+  export $(grep -v '^#' $PATH_ENV | xargs -0)
 
 fi
 
@@ -41,7 +41,7 @@ compose_start() {
 }
 
 code_reload() {
-  docker-compose up --detach --build
+  docker-compose -f $COMPOSE_YML up --detach --build
 }
 
 
