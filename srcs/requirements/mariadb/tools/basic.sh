@@ -1,12 +1,20 @@
-#!/bin/sh
-
-# /usr/bin/mysql_install_db --datadir=/var/lib/mysql --user=root --basedir=/usr
-/usr/bin/mysql_install_db --user=mysql --ldata=/var/lib/mysql
-/usr/bin/mysql_upgrade --user=mysql
-/usr/bin/mysqld_safe --datadir="/var/lib/mysql"
-echo "CREATE DATABASE wordpress;" | mysql -u root --skip-password
-mysql wordpress -u root --skip-password < /wordpress.sql
-echo "CREATE USER 'wp_admin' IDENTIFIED BY 'wp_admin';" | mysql -u root --skip-password
-echo "GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_admin'@'%' WITH GRANT OPTION;" | mysql -u root --skip-password
-echo "DROP DATABASE test" | mysql -u root --skip-password
-echo "FLUSH PRIVILEGES;" | mysql -u root --skip-password
+#!/usr/bin/env bash
+sed -i 's/bind-ad/#bind-ad/g' /etc/mysql/mariadb.conf.d/50-server.cnf
+chown -R mysql:mysql /var/lib/mysql
+if [ ! -d var/lib/mysql/$MYSQL_DB_NAME ]; then
+	service mysql start
+	chmod 777 /var/run/mysqld/mysqld.sock
+	mysql -u root -h localhost -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DB_NAME"
+	mysql -u root -h localhost -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'"
+	mysql -u root -h localhost -e "GRANT ALL PRIVILEGES ON $MYSQL_DB_NAME.* TO '$MYSQL_USER'@'%'"
+	mysql -u root -h localhost -e "FLUSH PRIVILEGES"
+	mysqladmin -u root password $ROOT_PASS
+	service mysql stop
+fi
+if [ ! -d /var/run/mysqld ]; then
+	mkdir /var/run/mysqld
+	touch /var/run/mysqld/mysqld.pid
+	mkfifo /var/run/mysqld/mysqld.sock
+	chown -R mysql /var/run/mysqld
+fi
+exec mysqld
